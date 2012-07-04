@@ -1,36 +1,26 @@
 Sets
-  i row /1*16/
-  j column /1*16/
-  color colors /1*4/
-  ii(i) /1*16/
-  jj(j) /1*16/;
+  i row index        /1*17/
+  j column index     /1*17/
+  c color            /1*4/
+  ii(i) row index    /1*17/
+  jj(j) column index /1*17/;
 
 Variables
-  vc(i, j, color)    foo
-  is_colrd(i, j)     bar
-  z                  baz;
+  vc(i,j,c) vc
+  z z;
 
-Binary variable vc(i,j,color);
-Binary variable is_colrd(i,j);
+Binary variable vc(i, j, c);
 
 Equations
-  n_colrd          define objective function
-  check1(i,j)      define check1
-  check2(i,j)      define check2
-  hmm(i,j,ii,jj,color)   asdf
-  hmm2(i,j,ii,jj,color)   asdf2;
+  objfn Number of colored vertexes
+  constraint1(i,j,ii,jj,c) No monochromatic rectangles
+  constraint2(i,j) Each vertex has one and only one color;
 
-n_colrd.. z =e= sum((i,j), is_colrd(i,j));
-check1(i,j).. sum((color), vc(i,j,color)) =l= 1;
-check2(i,j).. is_colrd(i,j) =e= sum((color), vc(i,j,color));
-hmm(i,j,ii,jj,color)$(ord(i)<>ord(ii) and ord(j)<>ord(jj)).. vc(i,j,color)+vc(ii,j,color)+vc(i,jj,color)+vc(ii,jj,color) =l= 3;
-hmm2(i,j,ii,jj,color)$(ord(i)<>ord(ii) and ord(j)<>ord(jj)).. vc(i,j,color)+vc(ii,j,color)+vc(i,jj,color)+vc(ii,jj,color) =g= 0;
+objfn.. z =e= sum((i,j,c), vc(i,j,c));
+constraint1(i,j,ii,jj,c)$(ord(i)<>ord(ii) and ord(j)<>ord(jj)).. vc(i,j,c)+vc(i,jj,c)+vc(ii,j,c)+vc(ii,jj,c) =l= 3;
+constraint2(i,j).. sum((c), vc(i,j,c)) =e= 1;
 
 Model coloring /all/;
-
-option iterlim = 9999999;
-option reslim = 9999999;
+option reslim = 999999999;
 option optcr = 0;
-solve coloring using mip maximizing z; 
-
-display z.l, z.m;
+solve coloring using mip maximizing z;
